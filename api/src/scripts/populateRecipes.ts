@@ -1,16 +1,12 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import connectDB from '../config/db';
 import Recipe from '../models/Recipe';
 import { searchRecipes, getRecipeDetails } from '../services/spoonacularService';
 
+const categories = ['pasta', 'soup'];
 
-connectDB();
-
-const categories = ['pasta', 'chicken', 'dessert', 'salad', 'soup'];
-
-const populateDB = async () => {
+export const populateDB = async () => {
   try {
     for (let category of categories) {
       const recipes = await searchRecipes(category);
@@ -31,11 +27,7 @@ const populateDB = async () => {
     }
 
     console.log('Base de datos llena de varias recetas nuevas!');
-    process.exit();
   } catch (err) {
-    console.error(err);
-    process.exit(1);
+    console.error('Error poblando la base de datos:', err);
   }
 };
-
-populateDB();

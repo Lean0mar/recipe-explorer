@@ -7,6 +7,7 @@ const RecipeSchema = new Schema({
   image: { type: String },
   sourceUrl: { type: String },
   createdBy: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
 });
 
 export default model('Recipe', RecipeSchema);

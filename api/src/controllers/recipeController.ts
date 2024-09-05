@@ -47,8 +47,15 @@ export const updateRecipe = async (req: Request, res: Response) => {
 };
 
 export const deleteRecipe = async (req: Request, res: Response) => {
-  await Recipe.findByIdAndDelete(req.params.id);
-  res.status(204).send();
+    const recipe = await Recipe.findById(req.params.id);
+
+    if (!recipe) {
+      return res.status(404).json({ message: 'Receta no encontrada' });
+    }
+
+    await Recipe.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({ message: 'Receta eliminada exitosamente', recipe });
 };
 
 export const searchExternalRecipes = async (req: Request, res: Response) => {

@@ -14,7 +14,44 @@ const router = Router();
 
 /**
  * @swagger
- * /recipes:
+ * /api/recipes/:
+ *   get:
+ *     summary: Obtiene todas las recetas
+ *     description: Recupera una lista de todas las recetas almacenadas en la base de datos.
+ *     tags:
+ *       - Recetas
+ *     responses:
+ *       200:
+ *         description: Lista de recetas
+ */
+router.get('/recipes/', getRecipes);
+
+/**
+ * @swagger
+ * /api/recipes/{id}:
+ *   get:
+ *     summary: Obtiene una receta por ID
+ *     description: Recupera una receta específica basada en su ID.
+ *     tags:
+ *       - Recetas
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: El ID de la receta
+ *     responses:
+ *       200:
+ *         description: Receta encontrada
+ *       404:
+ *         description: Receta no encontrada
+ */
+router.get('/recipes/:id', getRecipeById);
+
+/**
+ * @swagger
+ * /api/recipes/:
  *   post:
  *     summary: Crea una nueva receta
  *     description: Crea una nueva receta en la base de datos.
@@ -57,44 +94,7 @@ router.post('/recipes/', createRecipe);
 
 /**
  * @swagger
- * /recipes:
- *   get:
- *     summary: Obtiene todas las recetas
- *     description: Recupera una lista de todas las recetas almacenadas en la base de datos.
- *     tags:
- *       - Recetas
- *     responses:
- *       200:
- *         description: Lista de recetas
- */
-router.get('/recipes/', getRecipes);
-
-/**
- * @swagger
- * /recipes/{id}:
- *   get:
- *     summary: Obtiene una receta por ID
- *     description: Recupera una receta específica basada en su ID.
- *     tags:
- *       - Recetas
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: El ID de la receta
- *     responses:
- *       200:
- *         description: Receta encontrada
- *       404:
- *         description: Receta no encontrada
- */
-router.get('/recipes/:id', getRecipeById);
-
-/**
- * @swagger
- * /recipes/{id}:
+ * /api/recipes/{id}:
  *   put:
  *     summary: Actualiza una receta
  *     description: Actualiza una receta existente basada en su ID.
@@ -141,7 +141,7 @@ router.put('/recipes/:id', updateRecipe);
 
 /**
  * @swagger
- * /recipes/{id}:
+ * /api/recipes/{id}:
  *   delete:
  *     summary: Elimina una receta
  *     description: Elimina una receta existente basada en su ID.
@@ -155,8 +155,18 @@ router.put('/recipes/:id', updateRecipe);
  *           type: string
  *         description: El ID de la receta a eliminar
  *     responses:
- *       204:
+ *       200:
  *         description: Receta eliminada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Receta eliminada exitosamente
+ *                 recipe:
+ *                   $ref: '#/components/schemas/Recipe'
  *       404:
  *         description: Receta no encontrada
  */
@@ -164,7 +174,7 @@ router.delete('/recipes/:id', deleteRecipe);
 
 /**
  * @swagger
- * /recipes/search:
+ * /api/recipes/spoonacular-service/search:
  *   get:
  *     summary: Busca recetas externas
  *     description: Busca recetas en un servicio externo utilizando un término de búsqueda.
@@ -185,7 +195,7 @@ router.get('/recipes/spoonacular-service/search', searchExternalRecipes);
 
 /**
  * @swagger
- * /recipes/external:
+ * /api/recipes/external:
  *   post:
  *     summary: Agrega una receta desde un servicio externo
  *     description: Agrega una receta a la base de datos utilizando los detalles obtenidos de un servicio externo.
@@ -209,7 +219,49 @@ router.post('/recipes/external', addRecipeFromExternal);
 
 /**
  * @swagger
- * /users/register:
+ * /api/users/my-recipes:
+ *   get:
+ *     summary: Obtiene las recetas del usuario
+ *     description: Recupera todas las recetas creadas por el usuario autenticado.
+ *     tags:
+ *       - Usuarios
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Token de autenticación del usuario
+ *     responses:
+ *       200:
+ *         description: Lista de recetas del usuario
+ */
+router.get('/users/my-recipes', getUserRecipes);
+
+/**
+ * @swagger
+ * /api/users/my-favorites:
+ *   get:
+ *     summary: Obtiene recetas favoritas del usuario
+ *     description: Recupera todas las recetas marcadas como favoritas por el usuario.
+ *     tags:
+ *       - Usuarios
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Token de autenticación del usuario
+ *     responses:
+ *       200:
+ *         description: Lista de recetas favoritas del usuario
+ */
+router.get('/users/my-favorites', getUserFavorites);
+
+/**
+ * @swagger
+ * /api/users/register:
  *   post:
  *     summary: Registra un nuevo usuario
  *     description: Registra un nuevo usuario en la aplicación.
@@ -224,12 +276,12 @@ router.post('/recipes/external', addRecipeFromExternal);
  *             properties:
  *               username:
  *                 type: string
- *                 description: Nombre de usuario
+ *                 description: string
  *               email:
  *                 type: string
  *                 description: Correo electrónico del usuario
  *               password:
- *                 type: string
+ *                 type: 1234
  *                 description: Contraseña del usuario
  *     responses:
  *       201:
@@ -241,7 +293,7 @@ router.post('/users/register', registerUser);
 
 /**
  * @swagger
- * /users/login:
+ * /api/users/login:
  *   post:
  *     summary: Inicia sesión de usuario
  *     description: Permite a un usuario iniciar sesión.
@@ -270,28 +322,7 @@ router.post('/users/login', loginUser);
 
 /**
  * @swagger
- * /users/my-recipes:
- *   get:
- *     summary: Obtiene las recetas del usuario
- *     description: Recupera todas las recetas creadas por el usuario autenticado.
- *     tags:
- *       - Usuarios
- *     parameters:
- *       - in: query
- *         name: token
- *         required: true
- *         schema:
- *           type: string
- *         description: Token de autenticación del usuario
- *     responses:
- *       200:
- *         description: Lista de recetas del usuario
- */
-router.get('/users/my-recipes', getUserRecipes);
-
-/**
- * @swagger
- * /users/favorite:
+ * /api/users/favorite:
  *   post:
  *     summary: Agrega una receta a favoritos
  *     description: Agrega una receta a la lista de favoritos del usuario.
@@ -318,7 +349,7 @@ router.post('/users/favorite', addFavoriteRecipe);
 
 /**
  * @swagger
- * /users/favorite:
+ * /api/users/favorite:
  *   delete:
  *     summary: Elimina una receta de favoritos
  *     description: Elimina una receta de la lista de favoritos del usuario.
@@ -342,26 +373,5 @@ router.post('/users/favorite', addFavoriteRecipe);
  *         description: Receta eliminada de favoritos
  */
 router.delete('/users/favorite', removeFavoriteRecipe);
-
-/**
- * @swagger
- * /users/my-favorites:
- *   get:
- *     summary: Obtiene recetas favoritas del usuario
- *     description: Recupera todas las recetas marcadas como favoritas por el usuario.
- *     tags:
- *       - Usuarios
- *     parameters:
- *       - in: query
- *         name: token
- *         required: true
- *         schema:
- *           type: string
- *         description: Token de autenticación del usuario
- *     responses:
- *       200:
- *         description: Lista de recetas favoritas del usuario
- */
-router.get('/users/my-favorites', getUserFavorites);
 
 export default router;

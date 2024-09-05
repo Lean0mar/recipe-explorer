@@ -6,7 +6,42 @@ const userController_1 = require("../controllers/userController");
 const router = (0, express_1.Router)();
 /**
  * @swagger
- * /recipes:
+ * /api/recipes/:
+ *   get:
+ *     summary: Obtiene todas las recetas
+ *     description: Recupera una lista de todas las recetas almacenadas en la base de datos.
+ *     tags:
+ *       - Recetas
+ *     responses:
+ *       200:
+ *         description: Lista de recetas
+ */
+router.get('/recipes/', recipeController_1.getRecipes);
+/**
+ * @swagger
+ * /api/recipes/{id}:
+ *   get:
+ *     summary: Obtiene una receta por ID
+ *     description: Recupera una receta específica basada en su ID.
+ *     tags:
+ *       - Recetas
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: El ID de la receta
+ *     responses:
+ *       200:
+ *         description: Receta encontrada
+ *       404:
+ *         description: Receta no encontrada
+ */
+router.get('/recipes/:id', recipeController_1.getRecipeById);
+/**
+ * @swagger
+ * /api/recipes/:
  *   post:
  *     summary: Crea una nueva receta
  *     description: Crea una nueva receta en la base de datos.
@@ -48,42 +83,7 @@ const router = (0, express_1.Router)();
 router.post('/recipes/', recipeController_1.createRecipe);
 /**
  * @swagger
- * /recipes:
- *   get:
- *     summary: Obtiene todas las recetas
- *     description: Recupera una lista de todas las recetas almacenadas en la base de datos.
- *     tags:
- *       - Recetas
- *     responses:
- *       200:
- *         description: Lista de recetas
- */
-router.get('/recipes/', recipeController_1.getRecipes);
-/**
- * @swagger
- * /recipes/{id}:
- *   get:
- *     summary: Obtiene una receta por ID
- *     description: Recupera una receta específica basada en su ID.
- *     tags:
- *       - Recetas
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: El ID de la receta
- *     responses:
- *       200:
- *         description: Receta encontrada
- *       404:
- *         description: Receta no encontrada
- */
-router.get('/recipes/:id', recipeController_1.getRecipeById);
-/**
- * @swagger
- * /recipes/{id}:
+ * /api/recipes/{id}:
  *   put:
  *     summary: Actualiza una receta
  *     description: Actualiza una receta existente basada en su ID.
@@ -129,7 +129,7 @@ router.get('/recipes/:id', recipeController_1.getRecipeById);
 router.put('/recipes/:id', recipeController_1.updateRecipe);
 /**
  * @swagger
- * /recipes/{id}:
+ * /api/recipes/{id}:
  *   delete:
  *     summary: Elimina una receta
  *     description: Elimina una receta existente basada en su ID.
@@ -143,15 +143,25 @@ router.put('/recipes/:id', recipeController_1.updateRecipe);
  *           type: string
  *         description: El ID de la receta a eliminar
  *     responses:
- *       204:
+ *       200:
  *         description: Receta eliminada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Receta eliminada exitosamente
+ *                 recipe:
+ *                   $ref: '#/components/schemas/Recipe'
  *       404:
  *         description: Receta no encontrada
  */
 router.delete('/recipes/:id', recipeController_1.deleteRecipe);
 /**
  * @swagger
- * /recipes/search:
+ * /api/recipes/spoonacular-service/search:
  *   get:
  *     summary: Busca recetas externas
  *     description: Busca recetas en un servicio externo utilizando un término de búsqueda.
@@ -171,7 +181,7 @@ router.delete('/recipes/:id', recipeController_1.deleteRecipe);
 router.get('/recipes/spoonacular-service/search', recipeController_1.searchExternalRecipes);
 /**
  * @swagger
- * /recipes/external:
+ * /api/recipes/external:
  *   post:
  *     summary: Agrega una receta desde un servicio externo
  *     description: Agrega una receta a la base de datos utilizando los detalles obtenidos de un servicio externo.
@@ -194,7 +204,47 @@ router.get('/recipes/spoonacular-service/search', recipeController_1.searchExter
 router.post('/recipes/external', recipeController_1.addRecipeFromExternal);
 /**
  * @swagger
- * /users/register:
+ * /api/users/my-recipes:
+ *   get:
+ *     summary: Obtiene las recetas del usuario
+ *     description: Recupera todas las recetas creadas por el usuario autenticado.
+ *     tags:
+ *       - Usuarios
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Token de autenticación del usuario
+ *     responses:
+ *       200:
+ *         description: Lista de recetas del usuario
+ */
+router.get('/users/my-recipes', userController_1.getUserRecipes);
+/**
+ * @swagger
+ * /api/users/my-favorites:
+ *   get:
+ *     summary: Obtiene recetas favoritas del usuario
+ *     description: Recupera todas las recetas marcadas como favoritas por el usuario.
+ *     tags:
+ *       - Usuarios
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Token de autenticación del usuario
+ *     responses:
+ *       200:
+ *         description: Lista de recetas favoritas del usuario
+ */
+router.get('/users/my-favorites', userController_1.getUserFavorites);
+/**
+ * @swagger
+ * /api/users/register:
  *   post:
  *     summary: Registra un nuevo usuario
  *     description: Registra un nuevo usuario en la aplicación.
@@ -225,7 +275,7 @@ router.post('/recipes/external', recipeController_1.addRecipeFromExternal);
 router.post('/users/register', userController_1.registerUser);
 /**
  * @swagger
- * /users/login:
+ * /api/users/login:
  *   post:
  *     summary: Inicia sesión de usuario
  *     description: Permite a un usuario iniciar sesión.
@@ -253,27 +303,7 @@ router.post('/users/register', userController_1.registerUser);
 router.post('/users/login', userController_1.loginUser);
 /**
  * @swagger
- * /users/my-recipes:
- *   get:
- *     summary: Obtiene las recetas del usuario
- *     description: Recupera todas las recetas creadas por el usuario autenticado.
- *     tags:
- *       - Usuarios
- *     parameters:
- *       - in: query
- *         name: token
- *         required: true
- *         schema:
- *           type: string
- *         description: Token de autenticación del usuario
- *     responses:
- *       200:
- *         description: Lista de recetas del usuario
- */
-router.get('/users/my-recipes', userController_1.getUserRecipes);
-/**
- * @swagger
- * /users/favorite:
+ * /api/users/favorite:
  *   post:
  *     summary: Agrega una receta a favoritos
  *     description: Agrega una receta a la lista de favoritos del usuario.
@@ -299,7 +329,7 @@ router.get('/users/my-recipes', userController_1.getUserRecipes);
 router.post('/users/favorite', userController_1.addFavoriteRecipe);
 /**
  * @swagger
- * /users/favorite:
+ * /api/users/favorite:
  *   delete:
  *     summary: Elimina una receta de favoritos
  *     description: Elimina una receta de la lista de favoritos del usuario.
@@ -323,24 +353,4 @@ router.post('/users/favorite', userController_1.addFavoriteRecipe);
  *         description: Receta eliminada de favoritos
  */
 router.delete('/users/favorite', userController_1.removeFavoriteRecipe);
-/**
- * @swagger
- * /users/my-favorites:
- *   get:
- *     summary: Obtiene recetas favoritas del usuario
- *     description: Recupera todas las recetas marcadas como favoritas por el usuario.
- *     tags:
- *       - Usuarios
- *     parameters:
- *       - in: query
- *         name: token
- *         required: true
- *         schema:
- *           type: string
- *         description: Token de autenticación del usuario
- *     responses:
- *       200:
- *         description: Lista de recetas favoritas del usuario
- */
-router.get('/users/my-favorites', userController_1.getUserFavorites);
 exports.default = router;

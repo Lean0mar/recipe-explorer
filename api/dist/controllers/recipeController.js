@@ -56,8 +56,12 @@ const updateRecipe = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.updateRecipe = updateRecipe;
 const deleteRecipe = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const recipe = yield Recipe_1.default.findById(req.params.id);
+    if (!recipe) {
+        return res.status(404).json({ message: 'Receta no encontrada' });
+    }
     yield Recipe_1.default.findByIdAndDelete(req.params.id);
-    res.status(204).send();
+    res.status(200).json({ message: 'Receta eliminada exitosamente', recipe });
 });
 exports.deleteRecipe = deleteRecipe;
 const searchExternalRecipes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
